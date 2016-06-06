@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  Copyright (C) 2014-2015 The Dirty Unicorns Project
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ -->
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <!-- Bindable action labels -->
+    <string name="label_action_no_action">Geen actie</string>
+    <string name="label_action_settings_panel">Instellingen</string>
+    <string name="label_action_notification_panel">Notificatie</string>
+    <string name="label_action_screenshot">Schermafdruk</string>
+    <string name="label_action_screenrecord">Schermopname</string>
+    <string name="label_action_expanded_desktop">Uitgebreid bureaublad</string>
+    <string name="label_action_screen_off">Scherm uitschakelen</string>
+    <string name="label_action_force_close_app">App geforceerd afsluiten</string>
+    <string name="label_action_search_assistant">Zoekassistent</string>
+    <string name="label_action_google_now_on_tap">Google Now On Tap</string>
+    <string name="label_action_voice_search">Spraakzoeken</string>
+    <string name="label_action_in_app_search">Zoeken in app</string>
+    <string name="label_action_flashlight">Zaklamp</string>
+    <string name="label_action_bluetooth">Bluetooth</string>
+    <string name="label_action_wifi">WLAN</string>
+    <string name="label_action_hotspot">Hotspot</string>
+    <string name="label_action_last_app">Laatste app</string>
+    <string name="label_action_overview">Recente apps</string>
+    <string name="label_action_power_menu">Aan-/Uit-menu</string>
+    <string name="label_action_menu">Menu</string>
+    <string name="label_action_back">Terug</string>
+    <string name="label_action_home">\"Home\"</string>
+    <string name="label_action_ime_switcher">Wissel invoermethode (IME)</string>
+    <string name="label_action_stop_screenpinning">Stop \"Screen Pinning\"</string>
+    <string name="label_action_ime_down">Invoermethode: Cursor naar beneden</string>
+    <string name="label_action_ime_left">Invoermethode: Cursor naar links</string>
+    <string name="label_action_ime_right">Invoermethode: Cursor naar rechts</string>
+    <string name="label_action_ime_up">Invoermethode: Cursor naar boven</string>
+    <string name="label_action_app_picker">App kiezer</string>
+
+    <!-- Smartbar -->
+    <string name="label_smartbar_actions">Acties</string>
+    <string name="label_smartbar_icon">Icoon</string>
+    <string name="label_smartbar_add">Toevoegen</string>
+    <string name="label_smartbar_remove">Verwijderen</string>
+    <string name="label_smartbar_cancel">Annuleren</string>
+    <string name="label_smartbar_finish">Afsluiten</string>
+    <string name="label_smartbar_single_tap">Eenmaal tikken</string>
+    <string name="label_smartbar_double_tap">Tweemaal tikken</string>
+    <string name="label_smartbar_long_press">Lang drukken</string>
+    <string name="label_smartbar_icon_pack">Icoonpakket</string>
+    <string name="label_smartbar_icon_gallery">Galerie</string>
+    <string name="label_smartbar_icon_color">Kleur</string>
+    <string name="label_smartbar_icon_reset">Terugzetten</string>
+    <string name="smartbar_editor_toast_starting">Navigatie-editor gestart</string>
+    <string name="smartbar_editor_toast_stopping">Navigatie-editor gestopt</string>
+    <string name="smartbar_editor_toast_unavailable">Navigatie-editor niet beschikbaar</string>
+	
+</resources>
