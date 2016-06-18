@@ -46,6 +46,8 @@
     <string name="label_action_ime_left">Eingabemethode: Cursor nach links</string>
     <string name="label_action_ime_right">Eingabemethode: Cursor nach rechts</string>
     <string name="label_action_ime_up">Eingabemethode: Cursor nach oben</string>
+    <string name="label_action_app_picker">Anwendung wählen</string>
+    <string name="label_action_notification_clear">Benachrichtigungen löschen</string>
 
     <!-- Smartbar -->
     <string name="label_smartbar_actions">Aktionen</string>
