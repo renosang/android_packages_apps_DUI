@@ -48,7 +48,7 @@
     <string name="label_action_ime_up">Eingabemethode: Cursor nach oben</string>
     <string name="label_action_app_picker">Anwendung wählen</string>
     <string name="label_action_notification_clear">Benachrichtigungen löschen</string>
-
+    <string name="label_action_volume_panel">Lautstärkeregler</string>
     <!-- Smartbar -->
     <string name="label_smartbar_actions">Aktionen</string>
     <string name="label_smartbar_icon">Symbol</string>
