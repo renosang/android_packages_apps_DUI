@@ -47,6 +47,8 @@
     <string name="label_action_ime_right">Invoermethode: Cursor naar rechts</string>
     <string name="label_action_ime_up">Invoermethode: Cursor naar boven</string>
     <string name="label_action_app_picker">App kiezer</string>
+    <string name="label_action_notification_clear">Wis notificaties</string>
+    <string name="label_action_volume_panel">Volumepaneel</string>
 
     <!-- Smartbar -->
     <string name="label_smartbar_actions">Acties</string>
