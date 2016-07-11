@@ -49,6 +49,7 @@
     <string name="label_action_app_picker">App kiezer</string>
     <string name="label_action_notification_clear">Wis notificaties</string>
     <string name="label_action_volume_panel">Volumepaneel</string>
+    <string name="label_action_editing_smartbar">Smartbar editor</string>
 
     <!-- Smartbar -->
     <string name="label_smartbar_actions">Acties</string>
@@ -67,5 +68,6 @@
     <string name="smartbar_editor_toast_starting">Navigatie-editor gestart</string>
     <string name="smartbar_editor_toast_stopping">Navigatie-editor gestopt</string>
     <string name="smartbar_editor_toast_unavailable">Navigatie-editor niet beschikbaar</string>
+    <string name="edit_mode">Bewerkingsmodus</string>
 	
 </resources>
