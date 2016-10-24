@@ -18,10 +18,6 @@
 
 package com.android.systemui.navigation.smartbar;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.TimeInterpolator;
-
 import com.android.systemui.navigation.smartbar.SmartBarView;
 import com.android.systemui.navigation.smartbar.SmartButtonRipple;
 import com.android.internal.utils.du.ActionHandler;
@@ -33,17 +29,14 @@ import com.facebook.rebound.SpringListener;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.content.res.ThemeConfig;
-import android.util.Log;
+//import android.content.res.ThemeConfig;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
-import java.lang.Math;
 
 public class SmartButtonView extends ImageView {
     private static final String TAG = "StatusBar.KeyButtonView";
@@ -62,18 +55,17 @@ public class SmartButtonView extends ImageView {
     private static double FRICTION = 3;
     public static final int ANIM_STYLE_RIPPLE = 0;
     public static final int ANIM_STYLE_SPRING = 1;
-
-    // TODO: Get rid of this
-    public static final float DEFAULT_QUIESCENT_ALPHA = 1f;
+    public static final int ANIM_STYLE_FLIP = 2;
 
     private boolean isDoubleTapPending;
     private boolean wasConsumed;
-    private float mDrawingAlpha = 1f;
-    private float mQuiescentAlpha = DEFAULT_QUIESCENT_ALPHA;
-    private Animator mAnimateToQuiescent = new ObjectAnimator();
     private boolean mInEditMode;
+    private boolean mScreenPinningEnabled;
+    private int mAnimStyle = 0;
+    private ObjectAnimator mFlipAnim = null;
     private ButtonConfig mConfig;
     private SmartBarView mHost;
+    View.OnLongClickListener mLongPressBackListener;
 
     private Spring mSpring;
     private SpringListener mSpringListener = new SpringListener() {
@@ -99,14 +91,15 @@ public class SmartButtonView extends ImageView {
     public SmartButtonView(Context context, SmartBarView host) {
         super(context);
         mHost = host;
-        setDrawingAlpha(mQuiescentAlpha);
         setClickable(true);
         setLongClickable(false);
     }
 
     public void setAnimationStyle(int style) {
+        mAnimStyle = style;
         switch (style) {
             case ANIM_STYLE_RIPPLE:
+                // turn off spring if needed
                 if (mSpring != null) {
                     if (getScaleX() != 1f || getScaleY() != 1f) {
                         mSpring.setCurrentValue(0f);
@@ -117,21 +110,43 @@ public class SmartButtonView extends ImageView {
                 }
                 // this is causing NPE when user changes animation type
                 //mHost.flushSpringSystem();
+                // enable ripple
                 if (getBackground() != null && getBackground() instanceof SmartButtonRipple) {
                     SmartButtonRipple background = (SmartButtonRipple) getBackground();
                     background.setEnabled(true);
                 }
+                // free flip animation resources
+                mFlipAnim = null;
                 break;
             case ANIM_STYLE_SPRING:
+                // turn on spring
                 mSpring = mHost.getSpringSystem().createSpring();
                 mSpring.addListener(mSpringListener);
                 SpringConfig config = new SpringConfig(TENSION, FRICTION);
                 mSpring.setSpringConfig(config);
+                // turn off ripple
                 if (getBackground() != null && getBackground() instanceof SmartButtonRipple) {
                     SmartButtonRipple background = (SmartButtonRipple) getBackground();
                     background.setEnabled(false);
                 }
+                // free flip animation resources
+                mFlipAnim = null;
                 break;
+            case ANIM_STYLE_FLIP:
+                // turn off spring
+                if (mSpring != null) {
+                    if (getScaleX() != 1f || getScaleY() != 1f) {
+                        mSpring.setCurrentValue(0f);
+                    }
+                    mSpring.removeListener(mSpringListener);
+                    mSpring.destroy();
+                    mSpring = null;
+                }
+                // turn off ripple
+                if (getBackground() != null && getBackground() instanceof SmartButtonRipple) {
+                    SmartButtonRipple background = (SmartButtonRipple) getBackground();
+                    background.setEnabled(false);
+                }
         }
     }
 
@@ -149,6 +164,19 @@ public class SmartButtonView extends ImageView {
 
     public void setEditMode(boolean editMode) {
         mInEditMode = editMode;
+        if (editMode && mSpring != null) {
+            if (getScaleX() != 1f || getScaleY() != 1f) {
+                mSpring.setCurrentValue(0f);
+            }
+        }
+    }
+
+    public void setScreenPinningMode(boolean enabled) {
+        mScreenPinningEnabled = enabled;
+    }
+
+    public void setLongPressBackListener(View.OnLongClickListener longPressBackListener) {
+        mLongPressBackListener = longPressBackListener;
     }
 
     public void setButtonConfig(ButtonConfig config) {
@@ -189,39 +217,6 @@ public class SmartButtonView extends ImageView {
         return mConfig;
     }
 
-    public void setQuiescentAlpha(float alpha, boolean animate) {
-        mAnimateToQuiescent.cancel();
-        alpha = Math.min(Math.max(alpha, 0), 1);
-        if (alpha == mQuiescentAlpha && alpha == mDrawingAlpha)
-            return;
-        mQuiescentAlpha = alpha;
-        if (DEBUG)
-            Log.d(TAG, "New quiescent alpha = " + mQuiescentAlpha);
-        if (animate) {
-            mAnimateToQuiescent = animateToQuiescent();
-            mAnimateToQuiescent.start();
-        } else {
-            setDrawingAlpha(mQuiescentAlpha);
-        }
-    }
-
-    private ObjectAnimator animateToQuiescent() {
-        return ObjectAnimator.ofFloat(this, "drawingAlpha", mQuiescentAlpha);
-    }
-
-    public float getQuiescentAlpha() {
-        return mQuiescentAlpha;
-    }
-
-    public float getDrawingAlpha() {
-        return mDrawingAlpha;
-    }
-
-    public void setDrawingAlpha(float x) {
-        setImageAlpha((int) (x * 255));
-        mDrawingAlpha = x;
-    }
-
     // special case: double tap for screen off we never capture up motion event
     // reset spring value and add/remove listeners if screen on/off
     public void onScreenStateChanged(boolean screenOn) {
@@ -239,6 +234,15 @@ public class SmartButtonView extends ImageView {
         }
     }
 
+    private void checkAndDoFlipAnim() {
+        if (mAnimStyle == ANIM_STYLE_FLIP) {
+            mFlipAnim = ObjectAnimator.ofFloat(this, "rotationY", 0f, 360f);
+            mFlipAnim.setDuration(1500);
+            mFlipAnim.setInterpolator(new OvershootInterpolator());
+            mFlipAnim.start();
+        }
+    }
+
     public boolean onTouchEvent(MotionEvent ev) {
         if (mInEditMode) {
             return false;
@@ -248,6 +252,7 @@ public class SmartButtonView extends ImageView {
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 setPressed(true);
+                checkAndDoFlipAnim();
                 if (mSpring != null) {
                     mSpring.setEndValue(1f);
                 }
@@ -262,18 +267,31 @@ public class SmartButtonView extends ImageView {
                     if (hasRecentAction()) {
                         ActionHandler.preloadRecentApps();
                     }
-                    if (hasLongAction()) {
+                    if (hasLongAction() || mScreenPinningEnabled) {
                         removeCallbacks(mCheckLongPress);
                         postDelayed(mCheckLongPress, sLongPressTimeout);
                     }
                 }
                 break;
-            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                if (hasLongAction() || mScreenPinningEnabled) {
+                    removeCallbacks(mCheckLongPress);
+                }
+                removeCallbacks(mDoubleTapTimeout);
+                wasConsumed = true;
+                isDoubleTapPending = false;
                 setPressed(false);
                 if (mSpring != null) {
                     mSpring.setEndValue(0f);
                 }
-                if (hasLongAction()) {
+                break;
+            case MotionEvent.ACTION_UP:
+                setPressed(false);
+                checkAndDoFlipAnim();
+                if (mSpring != null) {
+                    mSpring.setEndValue(0f);
+                }
+                if (hasLongAction() || mScreenPinningEnabled) {
                     removeCallbacks(mCheckLongPress);
                 }
                 if (hasDoubleAction()) {
@@ -305,11 +323,17 @@ public class SmartButtonView extends ImageView {
     private void doLongPress() {
         isDoubleTapPending = false;
         wasConsumed = true;
-        if (mConfig != null) {
-            String action = mConfig.getActionConfig(ActionConfig.SECOND).getAction();
-            fireActionIfSecure(action);
+        if (mScreenPinningEnabled && mLongPressBackListener != null) {
             performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
+            mLongPressBackListener.onLongClick(this);
+        } else {
+            if (mConfig != null) {
+                String action = mConfig.getActionConfig(ActionConfig.SECOND).getAction();
+                fireActionIfSecure(action);
+                performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
+            }
         }
     }
 

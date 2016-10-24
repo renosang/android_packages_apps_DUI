@@ -2,7 +2,7 @@
  * Copyright (C) 2008 The Android Open Source Project
  * Copyright (C) 2014 The TeamEos Project
  * Copyright (C) 2016 The DirtyUnicorns Project
- * 
+ *
  * @author: Randall Rushing <randall.rushing@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,32 +16,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Base navigation bar abstraction for managing keyguard policy, internal
  * bar behavior, and everything else not feature implementation specific
- * 
+ *
  */
 
 package com.android.systemui.navigation;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.android.systemui.navigation.Navigator;
 import com.android.systemui.navigation.Res;
 import com.android.systemui.navigation.NavigationController.NavbarOverlayResources;
 import com.android.systemui.navigation.pulse.PulseController;
 import com.android.systemui.navigation.pulse.PulseController.PulseObserver;
-import com.android.systemui.navigation.utils.ColorAnimator;
 import com.android.systemui.navigation.utils.SmartObserver;
-import com.android.systemui.navigation.utils.SmartObserver.SmartObservable;
-import com.android.systemui.statusbar.BarTransitions;
+import com.android.systemui.statusbar.phone.BarTransitions;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 import com.android.systemui.R;
 
-import com.android.internal.utils.du.ActionConstants;
 import com.android.internal.utils.du.DUActionUtils;
 import com.android.internal.utils.du.ImageHelper;
 
@@ -52,25 +47,20 @@ import android.animation.LayoutTransition;
 import android.app.StatusBarManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.UserHandle;
-import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewRootImpl;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -120,6 +110,10 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
     // listeners from PhoneStatusBar
     protected View.OnTouchListener mHomeActionListener;
     protected View.OnTouchListener mUserAutoHideListener;
+    protected View.OnLongClickListener mLongPressBackListener;
+
+    protected boolean mCarMode = false;
+    protected boolean mDockedStackExists;
 
     private class H extends Handler {
         public void handleMessage(Message m) {
@@ -161,7 +155,6 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
         mSmartObserver = new SmartObserver(mHandler, context.getContentResolver());
         mSpringSystem = SpringSystem.create();
         sIsTablet = !DUActionUtils.navigationBarCanMove();
-        mVertical = false;
     }
 
     // require implementation. Surely they have something to clean up
@@ -175,7 +168,7 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
     public void abortCurrentGesture(){}
 
     public void setMenuVisibility(final boolean show) {}
-    public void setMenuVisibility(final boolean show, final boolean force) {} 
+    public void setMenuVisibility(final boolean show, final boolean force) {}
     public void setNavigationIconHints(int hints) {}
     public void setNavigationIconHints(int hints, boolean force) {}
     public void onHandlePackageChanged(){}
@@ -193,14 +186,10 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
         getBarTransitions().updateResources(mResourceMap);
     }
 
-    @Override
-    public void screenPinningStateChanged(boolean enabled) {
-        mScreenPinningEnabled = enabled;
-    }
-
 	@Override
-	public void setListeners(OnTouchListener userAutoHideListener) {
+	public void setListeners(OnTouchListener userAutoHideListener, View.OnLongClickListener longPressBackListener) {
 	    mUserAutoHideListener = userAutoHideListener;
+	    mLongPressBackListener = longPressBackListener;
 	}
 
 	@Override
@@ -330,6 +319,10 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
         return mKeyguardShowing;
     }
 
+    public boolean isLandscape() {
+        return mCurrentView == mRot90;
+    }
+
     // if a bar instance is created from a user mode switch
     // PhoneStatusBar should call this. This allows the view
     // to make adjustments that are otherwise not needed when
@@ -340,8 +333,8 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
 
         // PhoneStatusBar doesn't set this when user inflates a bar, only when
         // actual value changes #common_cm
-        mLeftInLandscape = CMSettings.System.getIntForUser(resolver,
-                CMSettings.System.NAVBAR_LEFT_IN_LANDSCAPE, 0, UserHandle.USER_CURRENT) == 1;
+//        mLeftInLandscape = CMSettings.System.getIntForUser(resolver,
+//                CMSettings.System.NAVBAR_LEFT_IN_LANDSCAPE, 0, UserHandle.USER_CURRENT) == 1;
         // we boot with screen off, but we need to force it true here
         mScreenOn = true;
         if (mPulse != null) {
@@ -432,7 +425,7 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
 
         if (DEBUG) {
             Log.d(TAG, "reorient(): rot=" + mDisplay.getRotation());
-        }      
+        }
     }
 
     @Override
@@ -487,20 +480,6 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
         rot90NavButton.setLayoutTransition(new LayoutTransition());
         rot90NavButton.setTag(Res.Common.NAV_BUTTONS);
 
-        LinearLayout rot0LightsOut = new LinearLayout(getContext());
-        rot0LightsOut.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT));
-        rot0LightsOut.setOrientation(LinearLayout.HORIZONTAL);
-        rot0LightsOut.setVisibility(View.GONE);
-        rot0LightsOut.setTag(Res.Common.LIGHTS_OUT);
-
-        LinearLayout rot90LightsOut = new LinearLayout(getContext());
-        rot90LightsOut.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT));
-        rot90LightsOut.setOrientation(sIsTablet ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
-        rot0LightsOut.setVisibility(View.GONE);
-        rot90LightsOut.setTag(Res.Common.LIGHTS_OUT);
-
         mRot0 = new FrameLayout(getContext());
         mRot0.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT));
@@ -516,13 +495,11 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
             setBackground(getContext().getDrawable(R.drawable.system_bar_background));
         }
 
-        addBatteryBarLayout(mRot0);
+//        addBatteryBarLayout(mRot0);
         mRot0.addView(rot0NavButton);
-        mRot0.addView(rot0LightsOut);
 
-        addBatteryBarLayout(mRot90);
+//        addBatteryBarLayout(mRot90);
         mRot90.addView(rot90NavButton);
-        mRot90.addView(rot90LightsOut);
 
         addView(mRot0);
         addView(mRot90);
@@ -533,7 +510,7 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
         mRotatedViews[Surface.ROTATION_270] = mRotatedViews[Surface.ROTATION_90];
         mCurrentView = mRotatedViews[Surface.ROTATION_0];
     }
-
+/*
     private void addBatteryBarLayout(ViewGroup parent) {
         int which = -1;
         if (parent.equals(mRot0)) {
@@ -550,7 +527,7 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
             Log.e(TAG, "BatteryBarController failed to inflate");
         }
     }
-
+*/
     protected void setVisibleOrGone(View view, boolean visible) {
         if (view != null) {
             view.setVisibility(visible ? VISIBLE : GONE);
@@ -564,10 +541,6 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        ViewRootImpl root = getViewRootImpl();
-        if (root != null) {
-            root.setDrawDuringWindowsAnimating(true);
-        }
     }
 
     @Override

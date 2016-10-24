@@ -28,6 +28,7 @@
   <string name="label_action_search_assistant">Recherche</string>
   <string name="label_action_google_now_on_tap">Google On Tap</string>
   <string name="label_action_voice_search">Recherche vocale</string>
+  <string name="label_action_in_app_search">Recherche dans l\'application</string>
   <string name="label_action_flashlight">Lampe de poche</string>
   <string name="label_action_bluetooth">Bluetooth</string>
   <string name="label_action_wifi">Wi-Fi</string>
@@ -44,6 +45,9 @@
   <string name="label_action_ime_left">Curseur gauche</string>
   <string name="label_action_ime_right">Curseur droit</string>
   <string name="label_action_ime_up">Curseur haut</string>
+  <string name="label_action_volume_panel">Panneau de volume</string>
+  <string name="label_action_clear_notifications">Supprimer les notifications</string>
+  <string name="label_action_editing_smartbar">Menu d\'édition</string>
   <!-- Smartbar -->
   <string name="label_smartbar_actions">Actions</string>
   <string name="label_smartbar_icon">Icône</string>
@@ -61,4 +65,5 @@
   <string name="smartbar_editor_toast_starting">Démarrage du menu d\'édition de SmartBar</string>
   <string name="smartbar_editor_toast_stopping">Arrêt du menu d\'édition de SmartBar</string>
   <string name="smartbar_editor_toast_unavailable">Menu d\'édition de SmartBar non disponible</string>
+  <string name="edit_mode">Modifier</string>
 </resources>

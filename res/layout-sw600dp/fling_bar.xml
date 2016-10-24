@@ -30,8 +30,6 @@
         android:layout_width="match_parent"
         >
 
-        <include layout="@layout/battery_bar_rot0" />
-
         <LinearLayout
             android:id="@+id/nav_buttons"
             android:layout_width="match_parent"
@@ -52,36 +50,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="0"
-                android:src="@drawable/ic_hexagon_fling" />
+                android:src="@drawable/ic_eos_fling" />
 
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"/>
 
-        </LinearLayout>
-
-        <!-- lights out layout to match exactly -->
-        <LinearLayout
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:id="@+id/lights_out"
-            android:visibility="gone" >
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"/>
-            <ImageView
-                android:layout_width="128dp" android:paddingStart="25dp" android:paddingEnd="25dp"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_sysbar_lights_out_dot_small"
-                android:scaleType="center"
-                android:layout_weight="0" />
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
         </LinearLayout>
     </FrameLayout>
 
@@ -91,8 +66,6 @@
         android:visibility="gone"
         android:paddingTop="0dp"
         >
-
-        <include layout="@layout/battery_bar_rot90" />
 
         <LinearLayout
             android:layout_height="match_parent"
@@ -115,39 +88,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="0"
-                android:src="@drawable/ic_hexagon_fling_land" />
+                android:src="@drawable/ic_eos_fling_land" />
 
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"/>
 
-        </LinearLayout>
-
-        <!-- lights out layout to match exactly -->
-        <LinearLayout
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:id="@+id/lights_out"
-            android:visibility="gone"
-            >
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"/>
-            <ImageView
-                android:layout_width="162dp" android:paddingStart="42dp" android:paddingEnd="42dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="40dp"
-                android:src="@drawable/ic_sysbar_lights_out_dot_small"
-                android:scaleType="center"
-                android:layout_weight="0"
-                />
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"/>
         </LinearLayout>
     </FrameLayout>
 </com.android.systemui.navigation.fling.FlingView>

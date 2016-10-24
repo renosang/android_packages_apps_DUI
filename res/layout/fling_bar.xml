@@ -28,8 +28,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <include layout="@layout/battery_bar_rot0" />
-
         <LinearLayout
             android:id="@+id/nav_buttons"
             android:layout_width="match_parent"
@@ -52,36 +50,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight="0"
-                android:src="@drawable/ic_hexagon_fling" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:visibility="invisible" />
-        </LinearLayout>
-
-        <!-- NX lights out layout -->
-
-        <LinearLayout
-            android:id="@+id/lights_out"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:visibility="gone" >
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:visibility="invisible" />
-
-            <ImageView
-                android:layout_width="80dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0"
-                android:scaleType="center"
-                android:src="@drawable/ic_sysbar_lights_out_dot_large" />
+                android:src="@drawable/ic_eos_fling" />
 
             <View
                 android:layout_width="match_parent"
@@ -97,8 +66,6 @@
         android:layout_height="match_parent"
         android:paddingTop="0dp"
         android:visibility="gone" >
-
-        <include layout="@layout/battery_bar_rot90" />
 
         <LinearLayout
             android:id="@+id/nav_buttons"
@@ -122,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="0"
-                android:src="@drawable/ic_hexagon_fling_land" />
+                android:src="@drawable/ic_eos_fling_land" />
 
             <View
                 android:layout_width="match_parent"
@@ -130,34 +97,6 @@
                 android:layout_weight="1"
                 android:visibility="invisible" />
 
-        </LinearLayout>
-
-        <!-- NX lights out layout -->
-        <LinearLayout
-            android:id="@+id/lights_out"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone" >
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:visibility="invisible" />
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:layout_weight="0"
-                android:scaleType="center"
-                android:src="@drawable/ic_sysbar_lights_out_dot_large" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:visibility="invisible" />
         </LinearLayout>
     </FrameLayout>
 </com.android.systemui.navigation.fling.FlingView>
