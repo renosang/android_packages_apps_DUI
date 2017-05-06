@@ -51,6 +51,8 @@
   <string name="label_action_split_screen">Bildschirm teilen</string>
   <string name="label_action_one_handed_mode_left">Ein-Hand-Modus (linke Seite)</string>
   <string name="label_action_one_handed_mode_right">Ein-Hand-Modus (rechte Seite)</string>
+  <string name="label_action_media_left">Nächster Titel</string>
+  <string name="label_action_media_right">Vorheriger Titel</string>
 
   <!-- Smartbar -->
   <string name="label_smartbar_actions">Aktionen</string>
